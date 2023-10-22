@@ -1,0 +1,26 @@
+---
+- name: Install and Configure LAMP Stack and Laravel
+  hosts: all
+  become: yes
+  tasks:
+    - name: Execute server update and upgrade
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Run cron job commands to check server uptime every 12am
+      cron:
+        name: "Check Uptime"
+        job: "0 0 * * * /usr/bin/uptime > /var/log/uptime.log 2>&1"
+        state: present
+
+    - name: Copy LAMP+Laravel.sh script to the server
+      copy:
+        src: LAMP+Laravel.sh
+        dest: /tmp/LAMP+Laravel.sh
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Execute Script
+      command: /tmp/LAMP+Laravel.sh
